@@ -27,7 +27,7 @@
                 for ( var i = 1; i < j.length; i++){
                     fid.push(j[i]["fid"]),
                     unum.push(Number(j[i]["unum"]));
-                    console.log(unum);
+                    // console.log(unum);
                 }
                 var option = {
                     title: {
@@ -55,7 +55,7 @@
                 alert("查询失败");
             }
         });
-
+        window.setInterval(function(){$.ajax()},1000);
     </script>
 </body>
 </html>
