@@ -11,7 +11,7 @@
     <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
     <div id="main" style="width: 1500px;height:400px;"></div>
     <script type="text/javascript">
-        var fid = new Array();
+        var updatetime = new Array();
         var unum = new Array();
         var myChart = echarts.init(document.getElementById('main'));
 
@@ -25,7 +25,7 @@
                 // alert(result.data[0])
                 var j = result.data
                 for ( var i = 1; i < j.length; i++){
-                    fid.push(j[i]["fid"]),
+                    updatetime.push(j[i]["updatetime"]),
                     unum.push(Number(j[i]["unum"]));
                     // console.log(unum);
                 }
@@ -38,12 +38,12 @@
                         data:['帖子数量']
                     },
                     xAxis: {
-                        data: fid
+                        data: updatetime
                     },
                     yAxis: {},
                     series: [{
                         name: '销量',
-                        type: 'bar',
+                        type: 'line',
                         data: unum
                     }]
                 };
@@ -55,7 +55,7 @@
                 alert("查询失败");
             }
         });
-        window.setInterval(function(){$.ajax()},1000);
+        window.setInterval(function(){$.ajax()},100000);
     </script>
 </body>
 </html>
