@@ -1,8 +1,5 @@
 $(function() {
 
-    Morris.Area({
-    });
-
     Morris.Donut({
         element: 'morris-donut-chart',
         data: [{

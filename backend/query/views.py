@@ -20,27 +20,43 @@ def query_timelion(request):
     end_time = datetime.fromtimestamp(end)
 
     # results = session.query(timelion.fid, func.sum(timelion.unum)).filter(timelion.updatetime<now_time, timelion.updatetime>yes_time).group_by(timelion.fid).order_by(desc(func.sum(timelion.unum))).limit(50)	
-    month = func.extract('month', timelion.updatetime).label('month')
-    day = func.extract('day', timelion.updatetime).label('day')
-    hour = func.extract('hour', timelion.updatetime).label('hour')
-    unum = func.sum(timelion.unum)
+    # month = func.extract('month', timelion.updatetime).label('month')
+    # day = func.extract('day', timelion.updatetime).label('day')
+    # hour = func.extract('hour', timelion.updatetime).label('hour')
+    # unum = func.sum(timelion.unum)
 
+    #按小时来分类
+    # results = session.query(
+    #         timelion.fid, 
+    #         timelion.updatetime, 
+    #         month, 
+    #         day, 
+    #         hour, 
+    #         unum
+    #     ).group_by('hour', 'day').filter(timelion.fid == "34",timelion.updatetime<end_time, timelion.updatetime>start_time).all()
+
+    # response = {}
+    # response["data"] = []
+
+    # for result in results:
+    #     time = str(result[1])[:-6]+":00:00"
+    #     tmp = {"fid": result[0], 'updatetime': time, "unum": int(result[5])}
+    #     response["data"].append(tmp)
+
+
+    # 取出所有数据
     results = session.query(
-            timelion.fid, 
             timelion.updatetime, 
-            month, 
-            day, 
-            hour, 
-            unum
-        ).group_by('hour', 'day').filter(timelion.fid == "34",timelion.updatetime<end_time, timelion.updatetime>start_time).all()
+            timelion.unum
+        ).filter(
+            timelion.fid == "34", 
+        ).order_by(desc(timelion.updatetime)).limit(50)	
 
     response = {}
     response["data"] = []
 
     for result in results:
-        time = str(result[1])[:-6]+":00:00"
-        tmp = {"fid": result[0], 'updatetime': time, "unum": int(result[5])}
+        tmp = {'updatetime': str(result[0]), "unum": int(result[1])}
         response["data"].append(tmp)
-
 
     return HttpResponse(json.dumps(response), content_type="application/json")

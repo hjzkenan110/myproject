@@ -1,6 +1,6 @@
 var updatetime = new Array();
 var unum = new Array();
-var myChart = echarts.init(document.getElementById('morris-area-chart'));
+var myChart = echarts.init(document.getElementById('main'));
 
 $.ajax({
     type: "get",
@@ -17,9 +17,6 @@ $.ajax({
             // console.log(unum);
         }
         var option = {
-            title: {
-                text: '虎扑板各块帖量'
-            },
             tooltip: {},
             legend: {
                 data:['帖子数量']
@@ -29,7 +26,7 @@ $.ajax({
             },
             yAxis: {},
             series: [{
-                name: '销量',
+                name: '帖数',
                 type: 'line',
                 data: unum
             }]
@@ -42,4 +39,12 @@ $.ajax({
         alert("查询失败");
     }
 });
-// window.setInterval(function(){$.ajax()},100000);
+var charts = [];//定义一个全局变量
+
+charts.push(myChart);//将每个图表的实例存到全局变量中。
+
+window.onresize = function(){//在所有图表之后
+    for(var i = 0; i < charts.length; i++){
+        charts[i].resize();
+    }
+};

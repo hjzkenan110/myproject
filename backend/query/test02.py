@@ -22,17 +22,6 @@ class timelion(Base):
         return 'fid:{},updatetime:{},unum:{}'.format(self.fid, self.updatetime, self.unum)
 
 
-class info(Base):
-    __tablename__ = 'info'
-
-    fid = Column(String(length=10), primary_key=True)
-    fname = Column(String(length=50))
-    url = Column(String(length=50))
-
-    def __repr__(self):
-        return 'fid:{},fname:{},url:{}'.format(self.fid, self.fname, self.url)
-
-
 engine = create_engine('mysql+pymysql://itoffice:itoffice@192.168.127.129:3306/test')
 #timelion.__table__
 #info.__table__
@@ -47,10 +36,10 @@ session = DBSession()
 # pass
 # pass
 
-month = func.extract('month', timelion.updatetime).label('month')
-day = func.extract('day', timelion.updatetime).label('day')
-hour = func.extract('hour', timelion.updatetime).label('hour')
-unum = func.sum(timelion.unum)
+# month = func.extract('month', timelion.updatetime).label('month')
+# day = func.extract('day', timelion.updatetime).label('day')
+# hour = func.extract('hour', timelion.updatetime).label('hour')
+# unum = func.sum(timelion.unum)
 
 # results = session.query(timelion.updatetime, func.sum(timelion.unum), month, day, hour).filter(timelion.fid == "34").order_by(desc(timelion.updatetime)).group_by('hour').limit(50)
 # results = session.query(
