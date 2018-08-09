@@ -1,4 +1,3 @@
-import logging
 import time
 
 import requests
@@ -74,3 +73,8 @@ def fetch_info():
 
 if __name__ == "__main__":
     main()
+
+
+# url: //div/ul/li/span/../a/@href
+# name: //div/ul/li/span/../a
+# num: //div/ul/li/span/../span

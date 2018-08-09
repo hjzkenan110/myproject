@@ -9,30 +9,28 @@ Base = declarative_base()
 class timelion(Base):
     __tablename__ = 'timelion'
 
-    fid = Column(String(50), ForeignKey('info.fid'), primary_key=True)
+    url = Column(String(30), ForeignKey('info.url'), primary_key=True)
     tpostnum = Column(Integer)
-    tid = Column(String(length=50))
-    updatetime = Column(DateTime, primary_key=True, default=datetime.datetime.now)
+    updatetime = Column(DateTime, primary_key=True)
     unum = Column(Integer)
 
     def __repr__(self):
-        return 'fid:{},updatetime:{},unum:{}'.format(self.fid, self.updatetime, self.unum)
+        return 'url:{},updatetime:{},unum:{}'.format(self.url, self.updatetime, self.unum)
 
 
 class info(Base):
     __tablename__ = 'info'
 
-    fid = Column(String(length=10), primary_key=True)
+    url = Column(String(length=50),  primary_key=True)
     fname = Column(String(length=50))
-    url = Column(String(length=50))
 
     def __repr__(self):
-        return 'fid:{},fname:{},url:{}'.format(self.fid, self.fname, self.url)
+        return 'url:{},fname:{}'.format(self.url, self.fname)
 
 
-engine = create_engine('mysql+pymysql://itoffice:itoffice@192.168.127.129:3306/test')
-timelion.__table__
+engine = create_engine('mysql+pymysql://itoffice:itoffice@192.168.127.129:3306/hp')
 info.__table__
+timelion.__table__
 Base.metadata.create_all(engine)
 
 DBSession = sessionmaker(bind=engine)

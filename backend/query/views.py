@@ -3,7 +3,7 @@ from datetime import datetime
 
 from django.http import HttpResponse
 from django.shortcuts import render
-from sqlalchemy import desc, func
+from sqlalchemy import asc, func
 
 from .test02 import session, timelion
 
@@ -16,8 +16,14 @@ def query_timelion(request):
         end = datetime.timestamp(datetime.now())
         start = datetime.timestamp(datetime.now()) - 86400
 
+    time = request.GET['time']
+
     start_time = datetime.fromtimestamp(start)
     end_time = datetime.fromtimestamp(end)
+
+    # 虎扑浏览总量, 按时间排序
+    # results = session.query(timelion.fid, func.sum(timelion.unum)).filter(timelion.updatetime<now_time, timelion.updatetime>yes_time).group_by(timelion.fid).order_by(desc(func.sum(timelion.unum))).limit(50)	
+
 
     # results = session.query(timelion.fid, func.sum(timelion.unum)).filter(timelion.updatetime<now_time, timelion.updatetime>yes_time).group_by(timelion.fid).order_by(desc(func.sum(timelion.unum))).limit(50)	
     # month = func.extract('month', timelion.updatetime).label('month')
@@ -49,8 +55,8 @@ def query_timelion(request):
             timelion.updatetime, 
             timelion.unum
         ).filter(
-            timelion.fid == "34", 
-        ).order_by(desc(timelion.updatetime)).limit(50)	
+            timelion.fid == "1048", 
+        ).order_by(asc(timelion.updatetime)).limit(50)	
 
     response = {}
     response["data"] = []

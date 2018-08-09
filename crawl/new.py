@@ -1,7 +1,6 @@
 import requests
 import time 
 from lxml import etree
-import fake_useragent
 
 URL = "http://www.haoweichi.com/Others/yi_da_li_ren_shen_fen_sheng_cheng"
 all = set()

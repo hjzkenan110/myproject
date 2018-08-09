@@ -2,9 +2,10 @@ var updatetime = new Array();
 var unum = new Array();
 var myChart = echarts.init(document.getElementById('main'));
 
+var checkText=$(".s1").find("option:selected").text();
 $.ajax({
     type: "get",
-    url: "/timelion",
+    url: "/timelion?" + "time=" + checkText,
     //data : {"year":year},
     cache : false,	//禁用缓存
     dataType: "json",
@@ -43,7 +44,8 @@ var charts = [];//定义一个全局变量
 
 charts.push(myChart);//将每个图表的实例存到全局变量中。
 
-window.onresize = function(){//在所有图表之后
+//在所有图表之后,自适应bootstrapt
+window.onresize = function(){
     for(var i = 0; i < charts.length; i++){
         charts[i].resize();
     }

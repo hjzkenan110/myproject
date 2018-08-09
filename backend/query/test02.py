@@ -9,7 +9,7 @@ import datetime
 
 Base = declarative_base()
 
-class timelion(Base):
+class all_timelion(Base):
     __tablename__ = 'timelion'
 
     fid = Column(String(50), ForeignKey('info.fid'), primary_key=True)
@@ -23,12 +23,18 @@ class timelion(Base):
 
 
 engine = create_engine('mysql+pymysql://itoffice:itoffice@192.168.127.129:3306/test')
-#timelion.__table__
-#info.__table__
-#Base.metadata.create_all(engine)
-
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
+
+# result = session.query(
+#   timelion.fid, func.sum(timelion.unum)
+#  ).group_by(
+#   timelion.fid
+#  ).order_by(desc(func.sum(timelion.unum))).limit(50)	
+
+# pass
+
+
 # result = session.query(timelion.fid, func.sum(timelion.unum)).filter(timelion.updatetime<now_time, timelion.updatetime>yes_time).group_by(timelion.fid).order_by(desc(func.sum(timelion.unum))).limit(50)	
 # result = session.query(timelion.fid, timelion.updatetime, func.extract('day', timelion.updatetime).label('day'), func.extract('hour', timelion.updatetime).label('h'), func.sum(timelion.unum)).filter(timelion.fid == "34").group_by('day','h').limit(50)
 # for r in result:
