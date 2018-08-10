@@ -1,6 +1,7 @@
 window.onload=function(){ 
     //假设这里每个五分钟执行一次test函数 
     get_all(); 
+    subForm();
     //get_serise();     
 } 
 function process(data){
@@ -70,10 +71,11 @@ function get_all(){
             alert("查询失败");
         }
     });
+}
 
 function subForm() {
     $.ajax({
-        url: '/tpostnum_rank', //请求的url
+        url: '/tpostnum-rank', //请求的url
         type: 'get', //请求的方式
         cache : false,	//禁用缓存
         dataType: "json",
@@ -83,8 +85,8 @@ function subForm() {
         success:function (data) {
             var str1 = "";
             //清空table中的html
-            $("#table table-bordered table-hover table-striped").html("");
-            $("#table table-bordered table-hover table-striped").append("<thead><tr><th>板块名</th><th>链接</th><th>更新时间</th><th>帖数</th></tr></thead>");
+            $("#fuck").html("");
+            $("#fuck").append("<thead><tr><th>板块名</th><th>链接</th><th>更新时间</th><th>帖数</th></tr></thead>");
             for(var i = 0;i<data.data.length;i++){
                 str1 = "<tr>" + 
                     "<th>"+data.data[i].fname + "</td>" +
@@ -92,12 +94,11 @@ function subForm() {
                     "<th>"+data.data[i].tpostnum + "</td>" +
                     "<th>"+data.data[i].updatetime + "</td>" +
                     "</tr>";
-                $("#table table-bordered table-hover table-striped").append(str1);
+                $("#fuck").append(str1);
             }
-            $("#table table-bordered table-hover table-striped").append("</th>")
+            $("#fuck").append("</th>")
         }
     });
-    
 } 
 
 
