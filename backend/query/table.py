@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, desc, func
 from sqlalchemy.orm import sessionmaker
-import datetime 
+from datetime import datetime
 
 Base = declarative_base()
 
@@ -28,15 +28,10 @@ class info(Base):
         return 'url:{},fname:{}'.format(self.url, self.fname)
 
 
-engine = create_engine('mysql+pymysql://itoffice:itoffice@192.168.127.129:3306/hp')
+engine = create_engine('mysql+pymysql://itoffice:itoffice@192.168.127.130:3306/hp')
 info.__table__
 timelion.__table__
 Base.metadata.create_all(engine)
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
-# a = session.query(func.date_format(timelion.updatetime, '%Y-%m-%d').label('date'), func.count('*').label('cnt')).filter(...).group_by('date').all()
-# print(a)
-# print(type(a))
-# pass
-# session.query(timelion).filter(timelion.fid=='ddd').order_by(desc.desc(timelion.updatetime)).first()

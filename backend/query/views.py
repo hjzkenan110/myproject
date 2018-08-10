@@ -3,10 +3,12 @@ from datetime import datetime
 
 from django.http import HttpResponse
 from django.shortcuts import render
-from sqlalchemy import asc, func, desc
+from sqlalchemy import asc, desc, func
+from sqlalchemy.orm import aliased
 
-from .table import session, timelion, info
+from .table import info, session, timelion
 
+BASE_URL = "https://bbs.hupu.com"
 # 查询总量
 def increase_timelion(request):
     
@@ -27,15 +29,74 @@ def increase_timelion(request):
     ).filter(
         timelion.updatetime<end_time, 
         timelion.updatetime>start_time,
-    ).group_by(timelion.updatetime).order_by(timelion.updatetime).all()
+    ).group_by(timelion.updatetime).order_by(desc(timelion.updatetime)).all()
 
     response = {}
     response["data"] = []
 
     for result in results:
-        tmp = {"fid": result[0], 'updatetime': str(result[0])}
+        tmp = {"tpostnum": int(result[1]), 'updatetime': str(result[0])}
         response["data"].append(tmp)
 
+    # 队列翻转
+    response["data"].reverse()
+    return HttpResponse(json.dumps(response), content_type="application/json")
+
+def process_time(time, choice):
+    if choice == "seconde":
+        zero = -9
+        pattern = "%Y-%m-%d %H:%M"
+    elif choice == "minute":
+        zero = -12
+        pattern = "%Y-%m-%d %H"
+    elif choice == "hour":
+        zero = -15
+        pattern = "%Y-%m-%d "
+
+    time = str(time)
+    time = time[:zero]
+    time = datetime.strptime(time, pattern)
+    return time
+
+# 查询当天帖量排名
+def tpostnum_rank(request):
+    millis = datetime.now()
+    millis = process_time(millis, choice="hour")
+    
+    start_time = millis
+    end_time = datetime.now()
+
+    maxtpostnum = func.max(timelion.tpostnum) 
+
+    results = session.query(
+        info.fname, timelion.url, maxtpostnum, timelion.updatetime
+    ).filter(
+        info.url==timelion.url,
+        timelion.updatetime<end_time, 
+        timelion.updatetime>start_time,
+    ).group_by(timelion.url).order_by(desc(maxtpostnum)).limit(8)
+
+    response = {}
+    response["data"] = []
+
+    for result in results:
+        tmp = {"fname": result[0], "url": BASE_URL + result[1], "tpostnum": int(result[2]), 'updatetime': str(result[3])}
+        response["data"].append(tmp)
+
+    # 队列翻转
+    response["data"].reverse()
+    return HttpResponse(json.dumps(response), content_type="application/json")
+
+# SELECT 
+# fname, info.url, max(tpostnum),updatetime 
+# from 
+# timelion ,info
+# WHERE
+# info.url = timelion.url
+# GROUP BY 
+# timelion.url
+# ORDER BY 
+# max(tpostnum) desc
 
 def series_timelion(request):
     try:
@@ -58,7 +119,10 @@ def series_timelion(request):
         timelion.updatetime>start_time,
         timelion.url==url,
         info.url==url
-    ).group_by(timelion.fid).order_by(desc(func.sum(timelion.updatetime))).all(50)	
+    ).group_by(timelion.fid).order_by(asc(func.sum(timelion.updatetime))).limit(50)	
+
+    # ---------------------------------------------------------
+
     # month = func.extract('month', timelion.updatetime).label('month')
     # day = func.extract('day', timelion.updatetime).label('day')
     # hour = func.extract('hour', timelion.updatetime).label('hour')

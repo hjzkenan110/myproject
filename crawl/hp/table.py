@@ -35,8 +35,4 @@ Base.metadata.create_all(engine)
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
-# a = session.query(func.date_format(timelion.updatetime, '%Y-%m-%d').label('date'), func.count('*').label('cnt')).filter(...).group_by('date').all()
-# print(a)
-# print(type(a))
-# pass
-# session.query(timelion).filter(timelion.fid=='ddd').order_by(desc.desc(timelion.updatetime)).first()
+
