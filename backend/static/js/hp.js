@@ -85,7 +85,7 @@ function process_pie(fname, tpostnum){
                 // dataView : {show: true, readOnly: true},
                 magicType : {
                     show: true, 
-                    type: ['pie', 'funnel'],
+                    type: ['pie'],
                     option: {
                         funnel: {
                             x: '100%',
