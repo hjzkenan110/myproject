@@ -6,7 +6,8 @@ from django.shortcuts import render
 from sqlalchemy import asc, desc, func
 from sqlalchemy.orm import aliased
 
-from .table import info, session, timelion
+from .table import info, timelion
+from .db import get_session
 
 BASE_URL = "https://bbs.hupu.com"
 # 查询总量
@@ -24,12 +25,15 @@ def increase_timelion(request):
 
     sum = func.sum(timelion.tpostnum)
 
+    session = get_session()
     results = session.query(
         timelion.updatetime, sum
     ).filter(
         timelion.updatetime<end_time, 
         timelion.updatetime>start_time,
     ).group_by(timelion.updatetime).order_by(desc(timelion.updatetime)).all()
+
+    session.close()
 
     response = {}
     response["data"] = []
@@ -60,6 +64,18 @@ def process_time(time, choice):
 
 # 查询当天帖量排名
 def tpostnum_rank(request):
+    try:
+        ty = request.GET['type']
+    except:
+        ty = "top8"
+
+    if ty == "others":
+        limit = ".limit(10)"
+    elif ty == "all":
+        limit = ".all()"
+    elif ty == "top8":
+        limit = ".limit(8)"
+
     millis = datetime.now()
     millis = process_time(millis, choice="hour")
     
@@ -68,23 +84,37 @@ def tpostnum_rank(request):
 
     maxtpostnum = func.max(timelion.tpostnum) 
 
-    results = session.query(
-        info.fname, timelion.url, maxtpostnum, timelion.updatetime
-    ).filter(
-        info.url==timelion.url,
-        timelion.updatetime<end_time, 
-        timelion.updatetime>start_time,
-    ).group_by(timelion.url).order_by(desc(maxtpostnum)).limit(8)
+    session = get_session()
+    results_str = "session.query(\
+        info.fname, timelion.url, maxtpostnum\
+    ).filter(\
+        info.url==timelion.url,\
+        timelion.updatetime<end_time, \
+        timelion.updatetime>start_time,\
+    ).group_by(timelion.url).order_by(desc(maxtpostnum))" + limit
+
+    results = eval(results_str)
+    session.close()
 
     response = {}
     response["data"] = []
 
+    he = 0
     for result in results:
         tmp = {"fname": result[0], "url": BASE_URL + result[1], "tpostnum": int(result[2]), 'updatetime': str(result[3])}
+        he = int(result[2]) + he
         response["data"].append(tmp)
 
-    # 队列翻转
-    response["data"].reverse()
+    if ty == "others":
+        session = get_session()
+        all_tpostnum = session.query(
+            func.sum(timelion.tpostnum)
+        ).group_by(timelion.updatetime).order_by(desc(timelion.updatetime)).limit(1)
+        session.close()
+        others = int(all_tpostnum[0][0])
+        others = others - he
+        response["data"].append({"fname": "others", "tpostnum": others})
+
     return HttpResponse(json.dumps(response), content_type="application/json")
 
 # SELECT 
@@ -111,7 +141,7 @@ def series_timelion(request):
     end_time = datetime.fromtimestamp(end)
 
     sum = func.sum(timelion.unum)
-
+    session = get_session()
     results = session.query(
         info.fname, timelion.url, sum, timelion.updatetime
     ).filter(
@@ -154,7 +184,7 @@ def series_timelion(request):
         ).filter(
             timelion.fid == "1048", 
         ).order_by(asc(timelion.updatetime)).limit(50)	
-
+    session.close()
     response = {}
     response["data"] = []
 
