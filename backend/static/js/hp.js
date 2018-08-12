@@ -4,7 +4,7 @@ window.onload=function(){
     get_rank();
     get_pie();
     get_hour();
-    //get_serise();     
+    get_serise();     
 } 
 
 function process_line(data){
@@ -261,7 +261,7 @@ function get_hour(){
                 updatetime.push(data.data[i].updatetime)
                 unum.push(Number(data.data[i].unum));
             }
-            process_hour(time, unum);
+            process_hour(updatetime, unum);
         }
     });
 
