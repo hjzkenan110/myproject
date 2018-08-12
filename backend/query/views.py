@@ -29,8 +29,8 @@ def increase_timelion(request):
     results = session.query(
         timelion.updatetime, sum
     ).filter(
-        timelion.updatetime<end_time, 
-        timelion.updatetime>start_time,
+        #timelion.updatetime<end_time, 
+        #timelion.updatetime>start_time,
     ).group_by(timelion.updatetime).order_by(desc(timelion.updatetime)).all()
 
     session.close()
@@ -89,9 +89,11 @@ def tpostnum_rank(request):
         info.fname, timelion.url, maxtpostnum\
     ).filter(\
         info.url==timelion.url,\
-        timelion.updatetime<end_time, \
-        timelion.updatetime>start_time,\
     ).group_by(timelion.url).order_by(desc(maxtpostnum))" + limit
+    #timelion.updatetime<end_time, \
+    #timelion.updatetime>start_time,\
+
+
 
     results = eval(results_str)
     session.close()
@@ -101,7 +103,7 @@ def tpostnum_rank(request):
 
     he = 0
     for result in results:
-        tmp = {"fname": result[0], "url": BASE_URL + result[1], "tpostnum": int(result[2]), 'updatetime': str(result[3])}
+        tmp = {"fname": result[0], "url": BASE_URL + result[1], "tpostnum": int(result[2])}
         he = int(result[2]) + he
         response["data"].append(tmp)
 
@@ -140,33 +142,38 @@ def series_timelion(request):
     start_time = datetime.fromtimestamp(start)
     end_time = datetime.fromtimestamp(end)
 
-    sum = func.sum(timelion.unum)
-    session = get_session()
-    results = session.query(
-        info.fname, timelion.url, sum, timelion.updatetime
-    ).filter(
-        timelion.updatetime<end_time, 
-        timelion.updatetime>start_time,
-        timelion.url==url,
-        info.url==url
-    ).group_by(timelion.fid).order_by(asc(func.sum(timelion.updatetime))).limit(50)	
+    # sum = func.sum(timelion.unum)
+    # session = get_session()
+    # results = session.query(
+    #     info.fname, timelion.url, sum, timelion.updatetime
+    # ).filter(
+    #     #timelion.updatetime<end_time, 
+    #     #timelion.updatetime>start_time,
+    #     timelion.url==url,
+    #     info.url==url
+    # ).group_by(timelion.fid).order_by(asc(func.sum(timelion.updatetime))).limit(50)	
 
     # ---------------------------------------------------------
 
-    # month = func.extract('month', timelion.updatetime).label('month')
-    # day = func.extract('day', timelion.updatetime).label('day')
-    # hour = func.extract('hour', timelion.updatetime).label('hour')
-    # unum = func.sum(timelion.unum)
+    month = func.extract('month', timelion.updatetime).label('month')
+    day = func.extract('day', timelion.updatetime).label('day')
+    hour = func.extract('hour', timelion.updatetime).label('hour')
+    unum = func.sum(timelion.unum)
 
-    #按小时来分类
-    # results = session.query(
-    #         timelion.fid, 
-    #         timelion.updatetime, 
-    #         month, 
-    #         day, 
-    #         hour, 
-    #         unum
-    #     ).group_by('hour', 'day').filter(timelion.fid == "34",timelion.updatetime<end_time, timelion.updatetime>start_time).all()
+    #c按小时来分类
+    session = get_session()
+    results = session.query(
+            timelion.url, 
+            timelion.updatetime, 
+            month, 
+            day, 
+            hour, 
+            unum
+        ).group_by('hour', 'day').filter(
+            timelion.url == "/2",
+            #timelion.updatetime<end_time, 
+            #timelion.updatetime>start_time
+        ).limit(50)
 
     # response = {}
     # response["data"] = []
@@ -178,18 +185,18 @@ def series_timelion(request):
 
 
     # 取出所有数据
-    results = session.query(
-            timelion.updatetime, 
-            timelion.unum
-        ).filter(
-            timelion.fid == "1048", 
-        ).order_by(asc(timelion.updatetime)).limit(50)	
+    # results = session.query(
+    #         timelion.updatetime, 
+    #         timelion.unum
+    #     ).filter(
+    #         timelion.fid == "1048", 
+    #     ).order_by(asc(timelion.updatetime)).limit(50)	
     session.close()
     response = {}
     response["data"] = []
 
     for result in results:
-        tmp = {'updatetime': str(result[0]), "unum": int(result[1])}
+        tmp = {'updatetime': str(result[1]), "unum": int(result[5])}
         response["data"].append(tmp)
 
     return HttpResponse(json.dumps(response), content_type="application/json")

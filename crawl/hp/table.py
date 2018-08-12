@@ -28,7 +28,7 @@ class info(Base):
         return 'url:{},fname:{}'.format(self.url, self.fname)
 
 
-engine = create_engine('mysql+pymysql://itoffice:itoffice@192.168.127.129:3306/hp')
+engine = create_engine('mysql+pymysql://root:@127.0.0.1:3306/hp')
 info.__table__
 timelion.__table__
 Base.metadata.create_all(engine)

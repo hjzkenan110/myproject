@@ -3,6 +3,7 @@ window.onload=function(){
     get_all(); 
     get_rank();
     get_pie();
+    get_hour();
     //get_serise();     
 } 
 
@@ -13,44 +14,44 @@ function process_line(data){
     // var timestamp3 = new Date().getTime();
     for ( var i = 1; i < data.length; i++){
         updatetime.push(data[i]["updatetime"]),
-        tpostnum.push(Number(data[i]["tpostnum"]));
+        tpostnum.push(Number(data[i]["tpostnum"]));}
         // console.log(unum);
-        var option = {
-            tooltip: {},
-            legend: {
-                data:['帖子数量']
+    var option = {
+        tooltip: {},
+        legend: {
+            data:['帖子数量']
+        },
+        xAxis: {
+            data: updatetime
+        },
+        yAxis: {
+            boundaryGap: [0, '50%'],
+        },
+        series: [{
+            symbol: 'none',
+            stack: 'a',
+            areaStyle: {
+                normal: {}
             },
-            xAxis: {
-                data: updatetime
+            //smooth:true,
+            name: '帖数',
+            type: 'line',
+            data: tpostnum
+        }],
+        dataZoom: [
+            {   // 这个dataZoom组件，默认控制x轴。
+                type: 'slider', // 这个 dataZoom 组件是 slider 型 dataZoom 组件
+                start: 90,      // 左边在 10% 的位置。
+                end: 100         // 右边在 60% 的位置。
             },
-            yAxis: {
-                boundaryGap: [0, '50%'],
-            },
-            series: [{
-                symbol: 'none',
-                stack: 'a',
-                areaStyle: {
-                    normal: {}
-                },
-                //smooth:true,
-                name: '帖数',
-                type: 'line',
-                data: tpostnum
-            }],
-            dataZoom: [
-                {   // 这个dataZoom组件，默认控制x轴。
-                    type: 'slider', // 这个 dataZoom 组件是 slider 型 dataZoom 组件
-                    start: 90,      // 左边在 10% 的位置。
-                    end: 100         // 右边在 60% 的位置。
-                },
-                {   // 这个dataZoom组件，也控制x轴。
-                    type: 'inside', // 这个 dataZoom 组件是 inside 型 dataZoom 组件
-                    start: 10,      // 左边在 10% 的位置。
-                    end: 60         // 右边在 60% 的位置。    
-                }    
-            ],
-        };
-    }
+            {   // 这个dataZoom组件，也控制x轴。
+                type: 'inside', // 这个 dataZoom 组件是 inside 型 dataZoom 组件
+                start: 10,      // 左边在 10% 的位置。
+                end: 60         // 右边在 60% 的位置。    
+            }    
+        ],
+    };
+    
     myChart.setOption(option);
     window.onresize = myChart.resize;
 }
@@ -186,7 +187,85 @@ function get_pie(){
 
 }
 
-                    
+function process_hour(updatetime, unum){
+    var myChart = echarts.init(document.getElementById('hour'));
+    option = {
+        title : {
+            text: '某地区蒸发量和降水量',
+            subtext: '纯属虚构'
+        },
+        tooltip : {
+            trigger: 'axis'
+        },
+        legend: {
+            data:['蒸发量']
+        },
+        toolbox: {
+            show : true,
+            feature : {
+                mark : {show: true},
+                dataView : {show: true, readOnly: false},
+                magicType : {show: true, type: ['line', 'bar']},
+                restore : {show: true},
+                saveAsImage : {show: true}
+            }
+        },
+        calculable : true,
+        xAxis : [
+            {
+                type : 'category',
+                data : updatetime
+            }
+        ],
+        yAxis : [
+            {
+                type : 'value'
+            }
+        ],
+        series : [
+            {
+                name:'降水量',
+                type:'bar',
+                data:unum,
+                // markPoint : {
+                //     data : [
+                //         {name : '年最高', value : 182.2, xAxis: 7, yAxis: 183, symbolSize:18},
+                //         {name : '年最低', value : 2.3, xAxis: 11, yAxis: 3}
+                //     ]
+                // },
+                // markLine : {
+                //     data : [
+                //         {type : 'average', name : '平均值'}
+                //     ]
+                // }
+            }
+        ]
+    };
+    myChart.setOption(option);
+}
+
+function get_hour(){
+    var updatetime = new Array();
+    var unum = new Array();
+    setTimeout(get_all,1000*60*5);
+    $.ajax({
+        url: '/series-timelion', //请求的url
+        type: 'get', //请求的方式
+        cache : false,	//禁用缓存
+        dataType: "json",
+        error:function (data) {
+            alert('请求失败');
+        },
+        success:function (data) {
+            for(var i = 0;i<data.data.length;i++){
+                updatetime.push(data.data[i].updatetime)
+                unum.push(Number(data.data[i].unum));
+            }
+            process_hour(time, unum);
+        }
+    });
+
+}
 
 
 

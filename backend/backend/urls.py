@@ -10,5 +10,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # path('', TemplateView.as_view(template_name='ajax.html')),
     path('', TemplateView.as_view(template_name='index.html')),
-
+    path('series-timelion', query.series_timelion)
 ]
