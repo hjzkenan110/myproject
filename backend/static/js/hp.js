@@ -191,14 +191,13 @@ function process_hour(updatetime, unum){
     var myChart = echarts.init(document.getElementById('hour'));
     option = {
         title : {
-            text: '某地区蒸发量和降水量',
-            subtext: '纯属虚构'
+            text: '装备区每小时更新量'
         },
         tooltip : {
             trigger: 'axis'
         },
         legend: {
-            data:['蒸发量']
+            data:['帖量']
         },
         toolbox: {
             show : true,
@@ -224,20 +223,9 @@ function process_hour(updatetime, unum){
         ],
         series : [
             {
-                name:'降水量',
+                name:'帖量',
                 type:'bar',
                 data:unum,
-                // markPoint : {
-                //     data : [
-                //         {name : '年最高', value : 182.2, xAxis: 7, yAxis: 183, symbolSize:18},
-                //         {name : '年最低', value : 2.3, xAxis: 11, yAxis: 3}
-                //     ]
-                // },
-                // markLine : {
-                //     data : [
-                //         {type : 'average', name : '平均值'}
-                //     ]
-                // }
             }
         ]
     };

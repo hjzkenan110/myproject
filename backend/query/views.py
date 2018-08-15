@@ -173,7 +173,7 @@ def series_timelion(request):
             timelion.url == "/2",
             #timelion.updatetime<end_time, 
             #timelion.updatetime>start_time
-        ).limit(50)
+        ).order_by(asc(timelion.updatetime)).limit(50)
 
     # response = {}
     # response["data"] = []

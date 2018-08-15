@@ -22,7 +22,7 @@ class all_timelion(Base):
         return 'fid:{},updatetime:{},unum:{}'.format(self.fid, self.updatetime, self.unum)
 
 
-engine = create_engine('mysql+pymysql://itoffice:itoffice@192.168.127.129:3306/test')
+engine = create_engine('mysql+pymysql://itoffice:itoffice@192.168.127.132:3306/test')
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 

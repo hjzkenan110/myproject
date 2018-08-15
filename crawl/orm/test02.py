@@ -21,7 +21,7 @@ class timelion(Base):
 
 
 
-engine = create_engine('mysql+pymysql://root:@localhost:3306/hp')
+engine = create_engine('mysql+pymysql://itoffice:itoffice@localhost:3306/hp')
 timelion.__table__
 Base.metadata.create_all(engine)
 
